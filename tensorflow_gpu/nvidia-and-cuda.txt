@@ -1,0 +1,107 @@
+# Passo-a-passo de instalação do driver da nvidia e cuda no Debian 12 (bookworm)
+
+# guia oficial de instação da nvidia
+# https://wiki.debian.org/NvidiaGraphicsDrivers#bookworm-525
+
+# suppored devices
+# https://us.download.nvidia.com/XFree86/Linux-x86_64/525.105.17/README/supportedchips.html#subsys
+
+# identificando qual driver está rodando (nouveau)
+
+$ lspci -nn | egrep -i "3d|display|vga"
+$ lsmod | grep nouveau
+
+# instalando o nvidia-detect
+
+$ sudo apt-get install nvidia-detect 
+$ nvidia-detect 
+
+-------------------------------------------------------------------------------------------------------
+Detected NVIDIA GPUs:
+01:00.0 3D controller [0302]: NVIDIA Corporation GP108M [GeForce MX150] [10de:1d10] (rev a1)
+
+Checking card:  NVIDIA Corporation GP108M [GeForce MX150] (rev a1)
+Your card is supported by all driver versions.
+Your card is also supported by the Tesla 470 drivers series.
+It is recommended to install the
+    nvidia-driver
+package.
+-------------------------------------------------------------------------------------------------------
+
+# prerequisites
+
+$ apt install linux-headers-amd64
+
+# nvidia driver 
+
+$ apt install nvidia-driver firmware-misc-nonfree
+$ sudo apt install nvidia-driver firmware-misc-nonfree
+$ sudo apt install linux-headers-amd64
+$ systemctl reboot
+
+# identificando uso do driver da nvidia ao invés do nouveau
+
+$ lsmod | grep nouveau
+$ lsmod | grep nvidia
+
+-------------------------------------------------------------------------------------------------------
+nvidia_uvm           1380352  0
+nvidia_drm             73728  2
+nvidia_modeset       1249280  2 nvidia_drm
+nvidia              56410112  111 nvidia_uvm,nvidia_modeset
+drm_kms_helper        208896  3 drm_display_helper,nvidia_drm,i915
+drm                   614400  26 drm_kms_helper,drm_display_helper,nvidia,drm_buddy,nvidia_drm,i915,ttm
+video                  65536  4 dell_wmi,dell_laptop,i915,nvidia_modeset
+-------------------------------------------------------------------------------------------------------
+
+# um guia alternativo instala libnvidia-encode1 (mas verifiquei que já estava instalado)
+# https://diolinux.com.br/video/driver-nvidia-no-debian-guia-completo.html
+
+$ apt list libnvidia-encode1
+
+-------------------------------------------------------------------------------------------------------
+Listing... Done
+libnvidia-encode1/stable-updates,now 525.147.05-7~deb12u1 amd64 [installed,automatic]
+N: There is 1 additional version. Please use the '-a' switch to see it
+-------------------------------------------------------------------------------------------------------
+
+# instalando o cuda (informações adicionais sobre o cuda no link abaixo)
+# https://tracker.debian.org/pkg/nvidia-cuda-toolkit
+
+$ sudo apt install nvidia-cuda-dev nvidia-cuda-toolkit
+$ systemctl reboot
+
+# verificando o resultado final da instalação
+
+$ nvidia-smi 
+
+Sun Jun 16 10:16:01 2024       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 525.147.05   Driver Version: 525.147.05   CUDA Version: 12.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ...  On   | 00000000:01:00.0 Off |                  N/A |
+| N/A   44C    P8    N/A /  N/A |      4MiB /  4096MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|    0   N/A  N/A      1852      G   /usr/lib/xorg/Xorg                  4MiB |
++-----------------------------------------------------------------------------+
+
+$ nvcc --version
+
+-------------------------------------------------------------------------------
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2022 NVIDIA Corporation
+Built on Wed_Sep_21_10:33:58_PDT_2022
+Cuda compilation tools, release 11.8, V11.8.89
+Build cuda_11.8.r11.8/compiler.31833905_0
+-------------------------------------------------------------------------------

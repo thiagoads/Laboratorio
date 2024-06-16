@@ -1,0 +1,8 @@
+name: tensorflow_gpu
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  # https://www.geeksforgeeks.org/how-to-use-tensorflow-with-gpu-support/
+  - tensorflow-gpu=2.4.1
