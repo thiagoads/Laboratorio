@@ -1,0 +1,13 @@
+name: tensorflow-mlflow
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  - mlflow==2.12.2
+  - tensorflow==2.12.0
+  # https://mlflow.org/docs/latest/system-metrics/index.html
+  - psutil
+  # https://anaconda.org/conda-forge/pynvml
+  #- conda-forge::pynvml 
+  # TODO pynvml.nvml.NVMLError_NotSupported: Not Supported
