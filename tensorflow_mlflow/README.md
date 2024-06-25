@@ -3,19 +3,14 @@
 ## Ambiente
 
 - debian12 (bookworm)
-- Docker
 - miniconda
+- MLFlow
 - vscode (IDE) + jupyter notebook (extensão)
 
 ## Configuração
 
-1) criar container MLFlow
+1) instalar MLFlow como tracking server
 
-    a) na pasta mlflow, execute ./run.sh
-
-    b) ou, ./build.sh e ./create.sh
-
-    c) use ./destroy p/ remover o conteiner
 
 2) criar ambiente conda
     ```
