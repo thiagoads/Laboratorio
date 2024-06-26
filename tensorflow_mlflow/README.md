@@ -5,7 +5,8 @@
 - debian12 (bookworm)
 - miniconda
 - MLFlow
-- vscode (IDE) + jupyter notebook (extensão)
+- VSCode (IDE) + jupyter notebook (extensão)
+- Postman ou curl
 
 ## Configuração
 
@@ -16,6 +17,11 @@
     ```
     conda env create -f environment.yml
     conda activate tensorflow_mlflow
+    ```
+
+3) importe collection no Postman
+    ```
+    Import >> postman.json
     ```
 
 ## Execução

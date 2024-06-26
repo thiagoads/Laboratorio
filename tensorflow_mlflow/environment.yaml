@@ -11,3 +11,4 @@ dependencies:
   # https://anaconda.org/conda-forge/pynvml
   #- conda-forge::pynvml 
   # TODO pynvml.nvml.NVMLError_NotSupported: Not Supported
+  - numpyencoder==0.3.0
