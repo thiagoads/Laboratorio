@@ -1,0 +1,7 @@
+name: chroma
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  - conda-forge::chromadb
