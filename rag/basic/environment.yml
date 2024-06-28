@@ -1,0 +1,10 @@
+name: rag_basic
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  - pypdf=4.2.0
+  - conda-forge::langchain
+  - conda-forge::langchain-openai
+  - conda-forge::chromadb
