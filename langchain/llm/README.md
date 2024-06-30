@@ -1,4 +1,4 @@
-# LLMs c/ Langchain, FastAPI e LangServe
+# LLMs App c/ Langchain, FastAPI e LangServe
 
 ## Ambiente
 
@@ -40,6 +40,7 @@
    ```
 
 3) acessar [LangServe Playground](http://localhost:8000/chain/playground/)
+   acessar [Documentação da API](http://localhost:8000/docs#/)
 
 
 
