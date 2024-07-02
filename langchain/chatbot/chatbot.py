@@ -39,8 +39,14 @@ def start_conversation(model:BaseChatModel):
     question = input(input_question)
 
     while(question):
-        answer = with_message_history.invoke({"messages": [HumanMessage(content=question)]}, config=config)
-        print(f"Answer: {answer}")
+        # writing answer as streaming
+        print("Answer: ", end="") 
+        for answer in with_message_history.stream(
+            {"messages": [HumanMessage(content=question)]}, 
+            config=config
+        ): print(answer, end="")
+        #skipping line after answer
+        print("")
         question = input(input_question)
 
 
