@@ -18,7 +18,7 @@ nvidia-and-cuda.txt
 
 2) abrir aplicativo NVIDIA Settings ao final do passo anterior
 
-![NVIDIA Settings](/nvidia-settings.png)
+![NVIDIA Settings](./nvidia-settings.png)
 
 
 3) criar ambiente conda

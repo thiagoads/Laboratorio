@@ -54,3 +54,7 @@ wget https://huggingface.co/janhq/mistral/resolve/f8a13e8d0b76e31afc9652d814ce1e
    ```
 
 Obs: Altere os prompts nos arquivos system_prompt.txt e user_query.txt na pasta prompts.
+
+## Referências
+
+https://huggingface.co/mistralai
