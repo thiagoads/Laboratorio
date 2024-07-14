@@ -1,0 +1,13 @@
+name: rag_local
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  # https://pytorch.org/get-started/locally/
+  - pytorch # TODO entender pq está instalando versão 1.12.1
+  # https://github.com/huggingface/transformers/issues/30618
+  - conda-forge::transformers # conda-forge está mais atual.
+  - conda-forge::chromadb
+  - conda-forge::llama-cpp-python
+  

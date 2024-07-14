@@ -1,0 +1,4 @@
+
+MODEL_CACHE_PATH = '.model'
+DATA_FOLDER_PATH = './data'
+CHROMADB_PATH = './db'
