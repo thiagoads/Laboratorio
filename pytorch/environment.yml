@@ -1,0 +1,20 @@
+name: pytorch
+channels:
+  - pytorch
+  - nvidia
+dependencies:
+  - defaults::jupyter=1.0.0
+  - defaults::python=3.9.16
+  # https://stackoverflow.com/questions/78726277/sha256-mismatch-for-conda-install-pytorch
+  - conda-forge::cuda-version=12.5
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1
+  # tem um bug atual com o plugin do tensorboard p/ vscode.
+  # https://github.com/microsoft/vscode-jupyter/issues/9467
+  - tensorboard=2.12.1
+  - matplotlib=3.9.1
+  - captum=0.7.0
+  #- flask=3.0.3
+  - flask-compress
