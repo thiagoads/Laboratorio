@@ -17,13 +17,13 @@ https://pytorch.org/get-started/locally/
 1) criar ambiente conda
 ```
 conda env create -f environment.yml
-conda activate pytorch
+conda activate pt_tutorial
 ```
 
 2) Ou, alternativamente:
 
 ```
-conda create -n pytorch python=3.9.16
+conda create -n pt_tutorial python=3.9.16
 ```
 
 CPU
