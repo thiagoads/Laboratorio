@@ -1,0 +1,14 @@
+name: nlp
+channels:
+  - defaults
+dependencies:
+  - jupyter=1.0.0
+  - python=3.9.16
+  # https://spacy.io/usage
+  - conda-forge::spacy
+  - conda-forge::cupy
+  - conda-forge::spacy-transformers
+  - conda-forge::pypdf
+  - conda-forge::gensim
+  - conda-forge::tesseract
+  - conda-forge::pytesseract
