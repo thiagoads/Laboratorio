@@ -1,4 +1,4 @@
-# Kolmogorov-Arnold Network (KAN)
+# BitNet
 
 ## Ambiente
 
