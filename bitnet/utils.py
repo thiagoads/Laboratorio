@@ -22,6 +22,13 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
     # Make features
     X_to_pred_on = torch.from_numpy(np.column_stack((xx.ravel(), yy.ravel()))).float()
 
+    # ajuste para considerar adicionar número de colunas esperadas pelo modelo
+    extra_columns = len(X[0]) - 2 
+    if extra_columns > 0:
+        X_with_extra_columns = np.zeros((X_to_pred_on.shape[0], 2 + extra_columns), dtype=np.float32)
+        X_with_extra_columns[:, :-extra_columns] = X_to_pred_on
+        X_to_pred_on = torch.from_numpy(X_with_extra_columns)
+
     # Make predictions
     model.eval()
     with torch.inference_mode():
