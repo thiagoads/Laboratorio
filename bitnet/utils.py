@@ -36,3 +36,21 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
     plt.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap=plt.cm.RdYlBu)
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
+
+
+def plot_results(results: dict):
+    fig, (ax1, ax2) = plt.subplots(nrows=1, 
+                                   ncols=2, 
+                                   sharex=True, 
+                                   figsize=(9, 4))
+    fig.suptitle(f"Performance do modelo {results['model_name']}",
+                 fontsize="x-large")
+    ax1.plot(results["train_loss"], label = "Train")
+    ax1.plot(results["test_loss"], label = "Test")
+    ax1.set_title("Loss", fontsize = 'large')
+    ax1.set_xlabel("Epochs")
+    ax2.plot(results["train_acc"], label = "Train")
+    ax2.plot(results["test_acc"], label = "Test")
+    ax2.set_title("Accuracy", fontsize = 'large')
+    ax2.set_xlabel("Epochs")
+    plt.legend()
