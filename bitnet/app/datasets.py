@@ -1,6 +1,5 @@
 import torch
 from torch.utils.data import Dataset
-from typing import Tuple
 
 class CustomDataset(Dataset):
     def __init__(self, features: list, 
