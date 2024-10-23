@@ -28,7 +28,8 @@ def train_step(model: torch.nn.Module,
         
         optimizer.step()
         
-        train_acc += metrics(torch.argmax(y_logits, dim = 1).cpu(), y.cpu())
+        acc = metrics(torch.argmax(y_logits, dim = 1).cpu(), y.cpu())
+        train_acc += acc.item()
 
     train_loss = train_loss / len(dataloader)
     train_acc = train_acc / len(dataloader)
@@ -49,7 +50,7 @@ def test_step(model: torch.nn.Module,
             y_logits_test = model(X_test.to(device))
             
             test_loss += criteria(y_logits_test, y_test).item()
-            test_acc += metrics(torch.argmax(y_logits_test, dim = 1).cpu(), y_test.cpu())
+            test_acc += metrics(torch.argmax(y_logits_test, dim = 1).cpu(), y_test.cpu()).item()
 
     test_loss = test_loss / len(dataloader)    
     test_acc = test_acc / len(dataloader)
@@ -64,18 +65,20 @@ def train(model: torch.nn.Module,
           criteria: torch.nn.Module,
           metrics: Accuracy,
           optimizer: torch.optim.Optimizer,
-          device: torch.device):
+          device: torch.device,
+          progress = True,
+          output = True):
     
     results = {
-        "model_name": str(model.name), "lr": optimizer.param_groups[0]["lr"],
-        "criteria": criteria, "batch_size": train_dataloader.batch_size,
-        "train_loss": [], "train_acc": [],  "test_loss": [], "test_acc": []
+        "model_name": str(model.name),
+        "train_loss": [], "train_acc": [],  
+        "test_loss": [], "test_acc": []
     }
 
     model.to(device)
 
     # començando épocas de treinamento do modelo
-    for epoch in tqdm(range(num_epochs)):
+    for epoch in tqdm(range(num_epochs), disable=(not progress)):
 
 
         # treinamento do modelo por uma época
@@ -92,9 +95,9 @@ def train(model: torch.nn.Module,
                                         criteria = criteria, 
                                         metrics = metrics, 
                                         device = device)
-
-        # exibindo métricas de treinamento e teste
-        print(f"Epoch: {epoch} | Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}% | Test Loss: {test_loss:.4f}, Test Acc: {test_acc:.2f}%")
+        if output:
+            # exibindo métricas de treinamento e teste
+            print(f"Epoch: {epoch} | Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}% | Test Loss: {test_loss:.4f}, Test Acc: {test_acc:.2f}%")
 
         results["train_loss"].append(train_loss)
         results["train_acc"].append(train_acc)

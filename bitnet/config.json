@@ -1,0 +1,16 @@
+{
+    "exp_dir": "./exps",
+    "params": {
+        "seeds": [42],
+        "num_samples": [1000],
+        "num_classes": [2],
+        "num_features": [2],
+        "batch_sizes": [32],
+        "hidden_layers": [2],
+        "hidden_units": [5],
+        "epochs": [10],
+        "learning_rates": [1e-3],
+        "generators": ["linear"],
+        "devices": ["cuda"]
+    }
+}
