@@ -2,15 +2,13 @@ import torch.nn as nn
 
 from bitnet import BitLinear
 
-HIDDEN_LAYERS = 2
-
 class BaseModel(nn.Module):
 
     def __init__(self, 
                  input_size: int, 
+                 hidden_layers: int,
                  hidden_units: int, 
-                 output_size: int, 
-                 hidden_layers: int=HIDDEN_LAYERS):
+                 output_size: int):
         super().__init__()
         self.name = "Base"
         self.input_layer = nn.Linear(in_features=input_size, out_features=hidden_units)
@@ -37,9 +35,9 @@ class BitModel(nn.Module):
 
     def __init__(self, 
                  input_size:int, 
+                 hidden_layers: int,
                  hidden_units:int, 
-                 output_size:int, 
-                 hidden_layers: int=HIDDEN_LAYERS):
+                 output_size:int):
         super().__init__()
         self.name = "Bitnet"
         self.input_layer = BitLinear(in_features=input_size, out_features=hidden_units)
