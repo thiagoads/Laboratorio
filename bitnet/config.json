@@ -1,17 +1,18 @@
 {
     "exp_dir": "./exps",
+    "method": "random",
     "params": {
-        "seeds": [42],
-        "num_samples": [1000],
-        "num_classes": [2],
-        "num_features": [2],
-        "batch_sizes": [32],
-        "hidden_layers": [2],
-        "hidden_units": [5],
+        "seeds": [null],
+        "num_samples": [1000, 2000],
+        "num_classes": [2, 3],
+        "num_features": [2, 4],
+        "batch_sizes": [32, 1],
+        "hidden_layers": [2, 4, 8],
+        "hidden_units": [5, 50],
         "epochs": [10],
-        "learning_rates": [1e-3],
-        "activations": ["tanh"],
-        "generators": ["linear"],
+        "learning_rates": [1e-3, 1e-4],
+        "activations": ["tanh", "relu", "selu"],
+        "generators": ["linear", "nonlinear", "unbalanced"],
         "devices": ["cuda"]
     }
 }

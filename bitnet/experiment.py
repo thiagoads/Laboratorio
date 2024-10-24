@@ -57,7 +57,8 @@ def start_experiment(
              params:dict=None):
     
 
-    print(f"Iniciamento execução do experimento: {exp_id}")
+    print(f"Iniciando execução do experimento: {exp_id}")
+    print(params)
     
     DEFAULT_ACCURACY = Accuracy(task="multiclass", 
                             num_classes=params.num_classes)
@@ -124,7 +125,7 @@ def start_experiment(
                        params=params, 
                        tags=["baseline"])
 
-    print("Treinando o modelo base")
+    # treinamento do modelo base
     base_results = train(model = base_model, 
                     train_dataloader=train_dataloader,
                     test_dataloader=test_dataloader,
@@ -134,7 +135,7 @@ def start_experiment(
                     metrics=DEFAULT_ACCURACY,
                     device = params.device,
                     progress=False,
-                    output=True,
+                    output=False,
                     monitor=run)
     
     #finalizando monitor
@@ -151,7 +152,7 @@ def start_experiment(
                        params=params, 
                        tags=["bitnet"])
 
-    print("Treinando o modelo bitnet")
+    # treinamento do modelo bitnet
     bit_results = train(model = bit_model, 
                     train_dataloader=train_dataloader,
                     test_dataloader=test_dataloader,
@@ -161,7 +162,7 @@ def start_experiment(
                     metrics=DEFAULT_ACCURACY,
                     device = params.device,
                     progress=False,
-                    output=True,
+                    output=False,
                     monitor=run)
     
     #finalizando monitoramento

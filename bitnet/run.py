@@ -1,8 +1,8 @@
 import uuid
 import json
-from datetime import datetime
-import itertools
+import itertools, more_itertools
 from pathlib import Path
+from datetime import datetime
 from collections import namedtuple
 
 import torch
@@ -20,7 +20,7 @@ def filter_devices(names: list):
             devices.append("cpu")
     return devices
 
-def get_grid(config):
+def get_combinations(config):
     GENERATORS = config["params"]["generators"]
     NUM_SAMPLES = config["params"]["num_samples"]
     NUM_CLASSES = config["params"]["num_classes"]
@@ -33,10 +33,20 @@ def get_grid(config):
     SEEDS = config["params"]["seeds"]
     ACTIVATIONS = config["params"]["activations"]
     DEVICES = filter_devices(config["params"]["devices"])
-    # retorna tuplas com a combinação de todas as possibilidades
-    return itertools.product(GENERATORS, NUM_SAMPLES, NUM_CLASSES, NUM_FEATURES, 
-                             BATCH_SIZES, HIDDEN_LAYERS, HIDDEN_UNITS, LEARNING_RATES, 
-                             ACTIVATIONS, EPOCHS, SEEDS, DEVICES)
+
+    method = config["method"]
+    if method == "grid":
+        # retorna tuplas com a combinação de todas as possibilidades
+        return itertools.product(GENERATORS, NUM_SAMPLES, NUM_CLASSES, NUM_FEATURES, 
+                                BATCH_SIZES, HIDDEN_LAYERS, HIDDEN_UNITS, LEARNING_RATES, 
+                                ACTIVATIONS, EPOCHS, SEEDS, DEVICES)
+    if method == "random":
+        # retorna tuplas com a combinação de todas as possibilidades randdomizadas
+        return more_itertools.random_product(GENERATORS, NUM_SAMPLES, NUM_CLASSES, NUM_FEATURES, 
+                                BATCH_SIZES, HIDDEN_LAYERS, HIDDEN_UNITS, LEARNING_RATES, 
+                                ACTIVATIONS, EPOCHS, SEEDS, DEVICES)
+    
+    raise ValueError(f"Method {method} not supported or specified! Choose between 'grid' or 'random'.")
 
 # cria diretorios necessários
 def dirs(config):
@@ -64,7 +74,7 @@ def main(config):
     now_str = datetime.now().strftime("%Y%m%d.%H%M%S.%f")
     run_dir = config["exp_dir"] + "/" + now_str
 
-    combinations = get_grid(config)
+    combinations = get_combinations(config)
     myexp_params = [ "generator", "num_samples", "num_classes", "num_features", 
                     "batch_size", "hidden_layers", "hidden_units", "learning_rate", 
                     "activation_alias", "epochs", "seed", "device"]
@@ -77,7 +87,7 @@ def main(config):
 
         # extraindo combinação de parametros
         params = parameters(*combination)
-
+        
         # iniciando treinamento 
         start_experiment(
                 exp_id=exp_id,

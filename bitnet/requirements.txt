@@ -5,3 +5,4 @@ tqdm==4.66.2
 torchinfo==1.8.0
 torchmetrics==1.4.3
 wandb==0.18.5
+more-itertools==10.5.0
