@@ -8,7 +8,7 @@ import torch
 from tqdm.auto import tqdm
 
 from app.generators import LinearlySeparableDataGenerator, NonLinearlySeparableDataGenerator, MixedAndUnbalancedDataGenerator
-from train import start_experiment
+from experiment import start_experiment
 
 def get_generators(names: list):
     generators = []
@@ -87,17 +87,7 @@ def main(config):
         start_experiment(
                 exp_id=exp_id,
                 exp_path=exp_path,
-                generator=params.generator,
-                num_samples=params.num_samples,
-                num_classes=params.num_classes,
-                num_features=params.num_features,
-                batch_size=params.batch_size,
-                hidden_layers=params.hidden_layers,
-                hidden_units=params.hidden_units,
-                learning_rate=params.learning_rate,
-                epochs=params.epochs,
-                seed=params.seed,
-                device=params.device)
+                params=params)
         
 
 if __name__ == "__main__":

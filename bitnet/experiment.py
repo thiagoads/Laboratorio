@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import wandb
 import torch
 from torch.utils.data import DataLoader
 from torchmetrics.classification import Accuracy
@@ -15,33 +16,56 @@ from app.utils import plot_results, plot_decision_boundary
 
 NUM_WORKERS = os.cpu_count()
 
+WANDB_PROJECT_NAME = "bitnet"
+
+def init_monitor(
+        exp_id:str,
+        model:torch.nn.Module,
+        params:dict,
+        tags:list=None):
+    
+    # 1. Start a new run
+    run = wandb.init(project=WANDB_PROJECT_NAME, 
+                     name = str(exp_id),
+                     tags=tags)
+    
+    # 2. Save model inputs and hyperparameters
+    config = run.config
+    config.exp_id = exp_id
+    config.model_name = model.name.lower()
+    config.generator = str(params.generator)
+    config.num_samples = params.num_samples
+    config.num_features = params.num_features
+    config.num_classes = params.num_classes
+    config.hidden_layers = params.hidden_layers
+    config.hidden_units = params.hidden_units
+    config.batch_size = params.batch_size
+    config.learning_rate = params.learning_rate
+    config.epochs = params.epochs
+    config.seed = params.seed
+    config.device = params.device
+
+    run.watch(model)
+    return run
+
 
 def start_experiment(
              exp_id:str=None,
              exp_path:Path=None,
-             generator=None,
-             num_samples:int=None,
-             num_features:int=None,
-             num_classes:int=None,
-             hidden_layers:int=None,
-             hidden_units:int=None,
-             batch_size:int=None,
-             learning_rate:float=None,
-             epochs:int=None,
-             seed:int=None,
-             device:torch.device=None):
+             params:dict=None):
     
+
     print(f"Iniciamento execução do experimento: {exp_id}")
     
     DEFAULT_ACCURACY = Accuracy(task="multiclass", 
-                            num_classes=num_classes)
+                            num_classes=params.num_classes)
 
     # gerando dados sintéticos c/ gerador escolhido
 
-    X, y = generator.generate(num_classes=num_classes,
-                              num_samples=num_samples,
-                              num_features=num_features,
-                              random_state=seed)
+    X, y = params.generator.generate(num_classes=params.num_classes,
+                              num_samples=params.num_samples,
+                              num_features=params.num_features,
+                              random_state=params.seed)
 
     X = torch.from_numpy(X).type(torch.float)
     y = torch.from_numpy(y)
@@ -49,7 +73,7 @@ def start_experiment(
     # divisão do conjunto de treinamento e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                                         test_size=0.2, 
-                                                        random_state=seed)
+                                                        random_state=params.seed)
 
     # criando dataset c/ dados gerados
     train_dataset = CustomDataset(features = X_train, 
@@ -61,61 +85,83 @@ def start_experiment(
 
     # criando dataloader c/ dataset 
     train_dataloader = DataLoader(dataset = train_dataset, 
-                                batch_size = batch_size, 
+                                batch_size = params.batch_size, 
                                 # reordena exemplos a cada época
                                 shuffle = True,
                                 num_workers = NUM_WORKERS)
 
     test_dataloader = DataLoader(dataset = test_dataset, 
-                                batch_size = batch_size, 
+                                batch_size = params.batch_size, 
                                 shuffle = False, 
                                 num_workers = NUM_WORKERS)
 
     # construção dos modelos
-    base_model = BaseModel(input_size=num_features,
-                        hidden_layers=hidden_layers, 
-                        hidden_units=hidden_units, 
-                        output_size=num_classes
-                        ).to(device)
+    base_model = BaseModel(input_size=params.num_features,
+                        hidden_layers=params.hidden_layers, 
+                        hidden_units=params.hidden_units, 
+                        output_size=params.num_classes
+                        ).to(params.device)
 
-    bit_model = BitModel(input_size=num_features, 
-                        hidden_layers=hidden_layers,
-                        hidden_units=hidden_units, 
-                        output_size=num_classes
-                        ).to(device)
+    bit_model = BitModel(input_size=params.num_features, 
+                        hidden_layers=params.hidden_layers,
+                        hidden_units=params.hidden_units, 
+                        output_size=params.num_classes
+                        ).to(params.device)
 
     # treinamento dos modelos
     criteria = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(params=base_model.parameters(), 
-                                lr=learning_rate)
+                                lr=params.learning_rate)
+    
+
+    # iniciando monitoramento do modelo base
+    run = init_monitor(exp_id=exp_id,
+                       model=base_model, 
+                       params=params, 
+                       tags=["baseline"])
 
     print("Treinando o modelo base")
     base_results = train(model = base_model, 
                     train_dataloader=train_dataloader,
                     test_dataloader=test_dataloader,
-                    num_epochs=epochs,
+                    num_epochs=params.epochs,
                     criteria=criteria,
                     optimizer=optimizer,
                     metrics=DEFAULT_ACCURACY,
-                    device = device,
+                    device = params.device,
                     progress=False,
-                    output=True)
+                    output=True,
+                    monitor=run)
+    
+    #finalizando monitor
+    run.finish()
+
 
     criteria = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(params=bit_model.parameters(), 
-                                lr=learning_rate)
+                                lr=params.learning_rate)
+    
+    # inicinado monitoramento do modelo bitnet
+    run = init_monitor(exp_id=exp_id,
+                       model=bit_model, 
+                       params=params, 
+                       tags=["bitnet"])
 
     print("Treinando o modelo bitnet")
     bit_results = train(model = bit_model, 
                     train_dataloader=train_dataloader,
                     test_dataloader=test_dataloader,
-                    num_epochs=epochs,
+                    num_epochs=params.epochs,
                     criteria=criteria,
                     optimizer=optimizer,
                     metrics=DEFAULT_ACCURACY,
-                    device = device,
+                    device = params.device,
                     progress=False,
-                    output=True)
+                    output=True,
+                    monitor=run)
+    
+    #finalizando monitoramento
+    run.finish()
     
     # salvando resultados dos treinamentos
     import json
