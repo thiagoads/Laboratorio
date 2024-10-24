@@ -61,3 +61,17 @@ def plot_results(results: dict):
     ax2.set_title("Accuracy", fontsize = 'large')
     ax2.set_xlabel("Epochs")
     plt.legend()
+
+def set_seed(seed = None):
+    if seed:
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+
+def InstanceActivationByAlias(alias:str):
+    if(alias == "tanh"):
+        return torch.nn.Tanh()
+    if(alias == "relu"):
+        return torch.nn.ReLU()
+    if(alias == "selu"):
+        return torch.nn.SELU()
+    raise KeyError(f"There is no activation with given alias: {alias}")

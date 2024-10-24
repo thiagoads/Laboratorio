@@ -133,3 +133,12 @@ class MixedAndUnbalancedDataGenerator():
         )
         
         return X, y
+    
+def InstanceGeneratorByAlias(alias: str):
+    if(alias == "linear"):
+        return LinearlySeparableDataGenerator()
+    if(alias == "nonlinear"):
+        return NonLinearlySeparableDataGenerator()
+    if(alias == "unbalanced"):
+        return MixedAndUnbalancedDataGenerator()
+    raise KeyError(f"There is no generator with given alias: {alias}")

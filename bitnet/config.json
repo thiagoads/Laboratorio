@@ -10,6 +10,7 @@
         "hidden_units": [5],
         "epochs": [10],
         "learning_rates": [1e-3],
+        "activations": ["tanh"],
         "generators": ["linear"],
         "devices": ["cuda"]
     }

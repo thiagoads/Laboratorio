@@ -10,9 +10,10 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 from app.datasets import CustomDataset
+from app.generators import InstanceGeneratorByAlias
 from app.models import BaseModel, BitModel
 from app.engine import train
-from app.utils import plot_results, plot_decision_boundary
+from app.utils import plot_results, plot_decision_boundary, InstanceActivationByAlias
 
 NUM_WORKERS = os.cpu_count()
 
@@ -33,7 +34,7 @@ def init_monitor(
     config = run.config
     config.exp_id = exp_id
     config.model_name = model.name.lower()
-    config.generator = str(params.generator)
+    config.generator = params.generator
     config.num_samples = params.num_samples
     config.num_features = params.num_features
     config.num_classes = params.num_classes
@@ -41,6 +42,7 @@ def init_monitor(
     config.hidden_units = params.hidden_units
     config.batch_size = params.batch_size
     config.learning_rate = params.learning_rate
+    config.activation = params.activation_alias
     config.epochs = params.epochs
     config.seed = params.seed
     config.device = params.device
@@ -61,8 +63,8 @@ def start_experiment(
                             num_classes=params.num_classes)
 
     # gerando dados sintéticos c/ gerador escolhido
-
-    X, y = params.generator.generate(num_classes=params.num_classes,
+    generator = InstanceGeneratorByAlias(params.generator)
+    X, y = generator.generate(num_classes=params.num_classes,
                               num_samples=params.num_samples,
                               num_features=params.num_features,
                               random_state=params.seed)
@@ -99,13 +101,15 @@ def start_experiment(
     base_model = BaseModel(input_size=params.num_features,
                         hidden_layers=params.hidden_layers, 
                         hidden_units=params.hidden_units, 
-                        output_size=params.num_classes
+                        output_size=params.num_classes,
+                        activation=InstanceActivationByAlias(params.activation_alias)
                         ).to(params.device)
 
     bit_model = BitModel(input_size=params.num_features, 
                         hidden_layers=params.hidden_layers,
                         hidden_units=params.hidden_units, 
-                        output_size=params.num_classes
+                        output_size=params.num_classes,
+                        activation=InstanceActivationByAlias(params.activation_alias)
                         ).to(params.device)
 
     # treinamento dos modelos
@@ -195,3 +199,7 @@ def start_experiment(
     # salvando pesos do modelos
     torch.save(obj=base_model.state_dict(), f = f"{exp_path}/models/base.pt")
     torch.save(obj=bit_model.state_dict(), f = f"{exp_path}/models/bit.pt")
+
+    # salvando paramateros do experimento
+    with open(f"{exp_path}/params/params.json", "w") as f:
+        json.dump(params._asdict(), f)
