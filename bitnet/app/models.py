@@ -11,6 +11,7 @@ class BaseModel(nn.Module):
                  output_size: int,
                  activation:nn.Module=nn.Tanh()):
         super().__init__()
+        self.code = 0
         self.name = "Base"
         self.input_layer = nn.Linear(in_features=input_size, out_features=hidden_units)
         
@@ -41,6 +42,7 @@ class BitModel(nn.Module):
                  output_size:int,
                  activation:nn.Module=nn.Tanh()):
         super().__init__()
+        self.code = 1
         self.name = "Bitnet"
         self.input_layer = BitLinear(in_features=input_size, out_features=hidden_units)
         

@@ -1,6 +1,7 @@
 import uuid
 import json
-import itertools, more_itertools
+import random
+import itertools
 from pathlib import Path
 from datetime import datetime
 from collections import namedtuple
@@ -21,30 +22,34 @@ def filter_devices(names: list):
     return devices
 
 def get_combinations(config):
-    GENERATORS = config["params"]["generators"]
-    NUM_SAMPLES = config["params"]["num_samples"]
-    NUM_CLASSES = config["params"]["num_classes"]
-    NUM_FEATURES = config["params"]["num_features"]
-    BATCH_SIZES = config["params"]["batch_sizes"]
-    HIDDEN_LAYERS = config["params"]["hidden_layers"]
-    HIDDEN_UNITS = config["params"]["hidden_units"]
-    LEARNING_RATES = config["params"]["learning_rates"]
-    EPOCHS = config["params"]["epochs"]
-    SEEDS = config["params"]["seeds"]
-    ACTIVATIONS = config["params"]["activations"]
-    DEVICES = filter_devices(config["params"]["devices"])
+    generators = config["params"]["generators"]
+    num_samples = config["params"]["num_samples"]
+    num_classes = config["params"]["num_classes"]
+    num_features = config["params"]["num_features"]
+    batch_sizes = config["params"]["batch_sizes"]
+    hidden_layers = config["params"]["hidden_layers"]
+    hidden_units = config["params"]["hidden_units"]
+    learning_rates = config["params"]["learning_rates"]
+    epochs = config["params"]["epochs"]
+    seeds = config["params"]["seeds"]
+    activations = config["params"]["activations"]
+    devices = filter_devices(config["params"]["devices"])
 
+    # retorna tuplas com a combinação de todas as possibilidades
+    combinations = list(itertools.product(generators, num_samples, num_classes, num_features, 
+                            batch_sizes, hidden_layers, hidden_units, learning_rates, 
+                            activations, epochs, seeds, devices))
     method = config["method"]
     if method == "grid":
-        # retorna tuplas com a combinação de todas as possibilidades
-        return itertools.product(GENERATORS, NUM_SAMPLES, NUM_CLASSES, NUM_FEATURES, 
-                                BATCH_SIZES, HIDDEN_LAYERS, HIDDEN_UNITS, LEARNING_RATES, 
-                                ACTIVATIONS, EPOCHS, SEEDS, DEVICES)
+        # return all possible combinations (this can take too much time!)
+        return combinations
+    
     if method == "random":
-        # retorna tuplas com a combinação de todas as possibilidades randdomizadas
-        return more_itertools.random_product(GENERATORS, NUM_SAMPLES, NUM_CLASSES, NUM_FEATURES, 
-                                BATCH_SIZES, HIDDEN_LAYERS, HIDDEN_UNITS, LEARNING_RATES, 
-                                ACTIVATIONS, EPOCHS, SEEDS, DEVICES)
+        # Calculate the number of samples to select (minimum of 1000 or 10% of the total)
+        num_samples = min(1000, int(0.1 * len(combinations)))
+        # Randomly select the specified number of combinations
+        random_combinations = random.sample(combinations, num_samples)
+        return random_combinations
     
     raise ValueError(f"Method {method} not supported or specified! Choose between 'grid' or 'random'.")
 
@@ -75,24 +80,37 @@ def main(config):
     run_dir = config["exp_dir"] + "/" + now_str
 
     combinations = get_combinations(config)
-    myexp_params = [ "generator", "num_samples", "num_classes", "num_features", 
+
+    params_keys = [ "generator", "num_samples", "num_classes", "num_features", 
                     "batch_size", "hidden_layers", "hidden_units", "learning_rate", 
                     "activation_alias", "epochs", "seed", "device"]
-    parameters = namedtuple("params", myexp_params)
     
-    # Loop through each combination
-    for combination in combinations:
-        # criando diretório p/ resultados do experimento
-        exp_id, exp_path = exps(run_dir)
+    parameters = namedtuple("params", params_keys)
 
-        # extraindo combinação de parametros
-        params = parameters(*combination)
-        
-        # iniciando treinamento 
-        start_experiment(
-                exp_id=exp_id,
-                exp_path=exp_path,
-                params=params)
+
+    rounds = config["rounds"]
+    for run in range(rounds):
+
+        print("+------------------------------------------------------------+")
+        print(f" Rodada #{run+1}      | N. Experimentos: {len(combinations)} ")
+        # Loop through each combination
+        for index, combination in enumerate(combinations):
+            # criando diretório p/ resultados do experimento
+            exp_id, exp_path = exps(run_dir)
+
+            # extraindo combinação de parametros
+            params = parameters(*combination)
+            print("+------------------------------------------------------------+")
+            print(f" Experimento #{index + 1} | Id: {exp_id}                     ")
+            print("+------------------------------------------------------------+")
+            print(params)
+            print("+------------------------------------------------------------+")
+
+            # iniciando treinamento 
+            start_experiment(
+                    exp_id=exp_id,
+                    exp_path=exp_path,
+                    params=params)
         
 
 if __name__ == "__main__":

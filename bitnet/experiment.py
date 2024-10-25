@@ -33,6 +33,7 @@ def init_monitor(
     # 2. Save model inputs and hyperparameters
     config = run.config
     config.exp_id = exp_id
+    config.model_code = model.code
     config.model_name = model.name.lower()
     config.generator = params.generator
     config.num_samples = params.num_samples
@@ -55,10 +56,6 @@ def start_experiment(
              exp_id:str=None,
              exp_path:Path=None,
              params:dict=None):
-    
-
-    print(f"Iniciando execução do experimento: {exp_id}")
-    print(params)
     
     DEFAULT_ACCURACY = Accuracy(task="multiclass", 
                             num_classes=params.num_classes)
