@@ -75,3 +75,10 @@ def InstanceActivationByAlias(alias:str):
     if(alias == "selu"):
         return torch.nn.SELU()
     raise KeyError(f"There is no activation with given alias: {alias}")
+
+def calculate_parameters(model: torch.nn.Module, only_trainable: bool):
+    if only_trainable:
+        return sum(p.numel() for p in model.parameters() if p.requires_grad == True)
+    else:
+        return sum(p.numel() for p in model.parameters())
+    

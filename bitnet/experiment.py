@@ -13,7 +13,7 @@ from app.datasets import CustomDataset
 from app.generators import InstanceGeneratorByAlias
 from app.models import BaseModel, BitModel
 from app.engine import train
-from app.utils import plot_results, plot_decision_boundary, InstanceActivationByAlias
+from app.utils import plot_results, plot_decision_boundary, InstanceActivationByAlias, calculate_parameters
 
 NUM_WORKERS = os.cpu_count()
 
@@ -47,10 +47,10 @@ def init_monitor(
     config.epochs = params.epochs
     config.seed = params.seed
     config.device = params.device
+    config.n_params = calculate_parameters(model=model)
 
     run.watch(model)
     return run
-
 
 def start_experiment(
              exp_id:str=None,
@@ -121,7 +121,7 @@ def start_experiment(
                        model=base_model, 
                        params=params, 
                        tags=["baseline"])
-
+    
     # treinamento do modelo base
     base_results = train(model = base_model, 
                     train_dataloader=train_dataloader,
