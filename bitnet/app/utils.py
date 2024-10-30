@@ -1,3 +1,4 @@
+import gc
 
 import torch
 import matplotlib.pyplot as plt
@@ -81,4 +82,8 @@ def calculate_parameters(model: torch.nn.Module, only_trainable: bool):
         return sum(p.numel() for p in model.parameters() if p.requires_grad == True)
     else:
         return sum(p.numel() for p in model.parameters())
+    
+def clear_memory():
+    gc.collect()
+    torch.cuda.empty_cache()
     
