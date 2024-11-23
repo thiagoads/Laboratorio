@@ -51,7 +51,7 @@ class BitModel(nn.Module):
         for _ in range(hidden_layers):
             self.hidden_layers.append(module=BitLinear(in_features=hidden_units, 
                                                        out_features=hidden_units))
-            self.hidden_layers.append(activation)
+            self.hidden_layers.append(module=activation)
         
         self.output_layer = BitLinear(in_features=hidden_units, out_features=output_size)
         self.activation = activation
